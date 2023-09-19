@@ -63,7 +63,7 @@ fn main() -> std::io::Result<()> {
     println!("Screen Dimension: {}x{}", screen.width, screen.height);
 
     /*** Page ***/
-    let mut mainpage = Page::new();
+    let mut mainpage = Page::new(&screen);
     /*** Fetch Weather Data ***/
     let openweather = get_weather().unwrap();
     let weather = WeatherData::new(openweather);
@@ -169,7 +169,7 @@ fn main() -> std::io::Result<()> {
 
     /*** Atmosphere ***/
     let humidity = Text::new(
-        &("φ:  " + weather.humidity + " %"),
+        &("φ:   " + weather.humidity + " %"),
         FONT_SMALLMED,
         Position::Relative(&Positioner {
             rel: temp_min.as_ref(),
@@ -256,10 +256,10 @@ fn main() -> std::io::Result<()> {
         &("1h: " + weather.rain_1h + "mm"),
         FONT_MED,
         Position::Relative(&Positioner {
-            rel: r_icon.as_ref(),
-            anchor: (HAlign::Right, VAlign::Center),
-            align: (HAlign::Right, VAlign::Center),
-            margin: (16, 0),
+            rel: w_speed.as_ref(),
+            anchor: (HAlign::Left, VAlign::Up),
+            align: (HAlign::Right, VAlign::Up),
+            margin: (0, -48),
         }),
     );
 
@@ -270,7 +270,7 @@ fn main() -> std::io::Result<()> {
             rel: r_1h.as_ref(),
             anchor: (HAlign::Right, VAlign::Center),
             align: (HAlign::Right, VAlign::Center),
-            margin: (16, 0),
+            margin: (64, 0),
         }),
     );
 
@@ -290,10 +290,10 @@ fn main() -> std::io::Result<()> {
         &("1h: " + weather.snow_1h + "mm"),
         FONT_MED,
         Position::Relative(&Positioner {
-            rel: s_icon.as_ref(),
-            anchor: (HAlign::Right, VAlign::Center),
-            align: (HAlign::Right, VAlign::Center),
-            margin: (16, 0),
+            rel: r_1h.as_ref(),
+            anchor: (HAlign::Left, VAlign::Up),
+            align: (HAlign::Right, VAlign::Up),
+            margin: (0, -48),
         }),
     );
 
@@ -304,7 +304,7 @@ fn main() -> std::io::Result<()> {
             rel: s_1h.as_ref(),
             anchor: (HAlign::Right, VAlign::Center),
             align: (HAlign::Right, VAlign::Center),
-            margin: (16, 0),
+            margin: (64, 0),
         }),
     );
 

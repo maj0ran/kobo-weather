@@ -77,10 +77,12 @@ impl<'a> Text<'a> {
 
         Box::new(w)
     }
+}
 
-    pub fn draw(&self) {
+impl<'a> Widget for Text<'a> {
+    fn get_pixel_data(&self) -> Vec<Color> {
         let mut pixels =
-            vec![Color::new(255, 255, 255); self.height as usize * self.height as usize];
+            vec![Color::new(255, 255, 255); self.width as usize * self.height as usize];
 
         for glyph in &self.glyphs {
             if let Some(bounding_box) = glyph.pixel_bounding_box() {
@@ -92,10 +94,8 @@ impl<'a> Text<'a> {
                 });
             }
         }
+        pixels
     }
-}
-
-impl<'a> Widget for Text<'a> {
     fn get_width(&self) -> u16 {
         self.width
     }
@@ -106,10 +106,6 @@ impl<'a> Widget for Text<'a> {
 
     fn get_pos(&self) -> UVec {
         self.pos
-    }
-
-    fn get_pixel_data(&self) -> &Vec<Color> {
-        &self.pixels
     }
 
     fn set_pos(&mut self, pos: UVec) {

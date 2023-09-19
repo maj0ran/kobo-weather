@@ -51,8 +51,9 @@ impl Widget for Graph {
         self.pos
     }
 
-    fn get_pixel_data(&self) -> &Vec<crate::util::Color> {
-        &self.pixels
+    fn get_pixel_data(&self) -> Vec<Color> {
+        let pixels = Vec::<Color>::new();
+        pixels
     }
 
     fn set_pos(&mut self, pos: UVec) {

@@ -34,11 +34,7 @@ impl<'a> Screen<'a> {
         })
     }
 
-    pub fn add_page(&'a self, mut page: Page<'a>) {
-        page.screen = Some(&self);
-        page.width = self.width;
-        page.height = self.height;
-
+    pub fn add_page(&'a self, page: Page<'a>) {
         let mut vector = self.pages.borrow_mut();
         vector.push(page);
     }

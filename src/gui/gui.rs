@@ -90,6 +90,6 @@ pub trait Widget {
     fn get_width(&self) -> u16;
     fn get_height(&self) -> u16;
     fn get_pos(&self) -> UVec;
-    fn get_pixel_data(&self) -> &Vec<Color>;
+    fn get_pixel_data(&self) -> Vec<Color>;
     fn set_pos(&mut self, pos: UVec);
 }

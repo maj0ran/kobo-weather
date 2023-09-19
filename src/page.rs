@@ -3,18 +3,20 @@ use crate::math::Vec2;
 use crate::screen::Screen;
 
 pub struct Page<'a> {
-    pub screen: Option<&'a Screen<'a>>,
+    pub screen: &'a Screen<'a>,
     pub width: u16,
     pub height: u16,
     pub widgets: Vec<Box<dyn Widget>>,
 }
 
 impl<'a> Page<'a> {
-    pub fn new() -> Page<'a> {
+    pub fn new(screen: &'a Screen<'a>) -> Page<'a> {
+        let width = screen.width;
+        let height = screen.height;
         Page {
-            screen: None,
-            width: 0,
-            height: 0,
+            screen,
+            width,
+            height,
             widgets: Vec::new(),
         }
     }
@@ -23,16 +25,17 @@ impl<'a> Page<'a> {
     }
 
     pub fn render(&self) -> Result<(), &str> {
-        let screen = self.screen.unwrap();
-        for o in &self.widgets {
-            let mut data = o.get_pixel_data().iter();
-            let p = o.get_pos();
+        let screen = self.screen;
+        for widget in &self.widgets {
+            let data = widget.get_pixel_data();
 
-            let w = o.get_width();
-            let h = o.get_height();
+            let p = widget.get_pos();
+            let w = widget.get_width() as usize;
+            let h = widget.get_height() as usize;
+
             for y in 0..h {
                 for x in 0..w {
-                    let res = screen.plot(p + Vec2::new(x, y), *data.next().unwrap());
+                    let res = screen.plot(p + Vec2::new(x as u16, y as u16), data[y * w + x]);
                     match res {
                         Ok(_) => {}
                         Err(_) => panic!("tried to plot pixel outside of screen!"),

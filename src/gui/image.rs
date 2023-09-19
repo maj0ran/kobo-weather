@@ -1,5 +1,5 @@
 use crate::{math::UVec, util::Color};
-use image::{imageops::FilterType, io::Reader as ImageReader};
+use image::{imageops::FilterType, io::Reader as ImageReader, DynamicImage};
 use std::path::Path;
 
 use super::gui::{Position, Widget};
@@ -12,7 +12,8 @@ pub struct Image {
     pos: UVec,
     width: u16,
     height: u16,
-    pixels: Vec<Color>,
+
+    data: DynamicImage,
 }
 
 impl Image {
@@ -20,31 +21,24 @@ impl Image {
         let file = Path::new(filename);
         println!("{}", filename);
         let data = ImageReader::open(file).unwrap().decode().unwrap();
-        let w: f32 = data.width() as f32;
-        let h: f32 = data.height() as f32;
+        let width = data.width() as f32;
+        let height = data.height() as f32;
 
-        let data = data.resize((w * scale) as u32, (h * scale) as u32, FilterType::Gaussian);
+        let data = data.resize(
+            (width * scale) as u32,
+            (height * scale) as u32,
+            FilterType::Gaussian,
+        );
+
+        // update width/height after resizing
         let width = data.width() as u16;
         let height = data.height() as u16;
-
-        // turn into grayscale and convert transparent background to white
-        let mut img = data.to_luma_alpha8();
-        let mut pixels: Vec<Color> = Vec::with_capacity((width * height) as usize);
-
-        // draw the pixels only in memory. Drawing on screen hapens when draw() is called.
-        // Not really a fan of this approach because of copying the data, but I didn't figure out
-        // how to do it more elegant yet, as I don't want let the GUI element call the draw
-        // function but rather just return the pixel data.
-        for px in img.pixels_mut() {
-            let val = 255 - (px.0[0] * px.0[1]);
-            pixels.push(Color::new(val, val, val))
-        }
 
         let w = Image {
             pos: UVec { x: 0, y: 0 },
             width,
             height,
-            pixels,
+            data,
         };
 
         let w = match pos {
@@ -69,8 +63,14 @@ impl Widget for Image {
         self.pos
     }
 
-    fn get_pixel_data(&self) -> &Vec<Color> {
-        &self.pixels
+    fn get_pixel_data(&self) -> Vec<Color> {
+        let mut pixels: Vec<Color> = Vec::with_capacity((self.width * self.height) as usize);
+        let mut img = self.data.to_luma_alpha8();
+        for px in img.pixels_mut() {
+            let val = 255 - (px.0[0] * px.0[1]);
+            pixels.push(Color::new(val, val, val))
+        }
+        pixels
     }
 
     fn set_pos(&mut self, pos: UVec) {
