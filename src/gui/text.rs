@@ -3,25 +3,25 @@
  ***/
 
 use crate::{
-    math::Vec2,
+    math::UVec,
     util::{Color, FontSetting},
 };
 use rusttype::{Font, PositionedGlyph, Scale};
 
-use super::gui::Widget;
+use super::gui::{Position, Widget};
 
 pub struct Text<'a> {
     // text: String
-    pub pos: Option<Vec2<i16>>,
-    pub data: Vec<PositionedGlyph<'a>>,
-    pub width: i16,
-    pub height: i16,
+    pub pos: UVec,
+    pub width: u16,
+    pub height: u16,
     pub font_info: FontSetting,
+    glyphs: Vec<PositionedGlyph<'a>>,
     pixels: Vec<Color>,
 }
 
 impl<'a> Text<'a> {
-    pub fn new(text: &str, font_info: FontSetting) -> Box<Text<'a>> {
+    pub fn new(text: &str, font_info: FontSetting, pos: Position) -> Box<Text<'a>> {
         let path = std::env::current_dir()
             .unwrap()
             .join("fonts/")
@@ -61,28 +61,50 @@ impl<'a> Text<'a> {
                 });
             }
         }
-
-        Box::new(Text {
-            pos: None,
-            data: glyphs,
-            width: glyphs_width as i16,
-            height: glyphs_height as i16,
+        let w = Text {
+            pos: UVec { x: 0, y: 0 },
+            width: glyphs_width as u16,
+            height: glyphs_height as u16,
             font_info,
+            glyphs,
             pixels,
-        })
+        };
+
+        let w = match pos {
+            Position::Absolute(p) => w.set_pos_abs(p),
+            Position::Relative(p) => w.set_pos_rel(p),
+        };
+
+        Box::new(w)
+    }
+
+    pub fn draw(&self) {
+        let mut pixels =
+            vec![Color::new(255, 255, 255); self.height as usize * self.height as usize];
+
+        for glyph in &self.glyphs {
+            if let Some(bounding_box) = glyph.pixel_bounding_box() {
+                glyph.draw(|x, y, v| {
+                    let c = (255.0 - 255.0 * v * self.font_info.saturation) as u8;
+                    let x = bounding_box.min.x + x as i32;
+                    let y = bounding_box.min.y + y as i32;
+                    pixels[(x + y * self.width as i32) as usize] = Color::new(c, c, c);
+                });
+            }
+        }
     }
 }
 
 impl<'a> Widget for Text<'a> {
-    fn get_width(&self) -> i16 {
+    fn get_width(&self) -> u16 {
         self.width
     }
 
-    fn get_height(&self) -> i16 {
+    fn get_height(&self) -> u16 {
         self.height
     }
 
-    fn get_pos(&self) -> Option<Vec2<i16>> {
+    fn get_pos(&self) -> UVec {
         self.pos
     }
 
@@ -90,7 +112,7 @@ impl<'a> Widget for Text<'a> {
         &self.pixels
     }
 
-    fn set_pos(&mut self, pos: Vec2<i16>) {
-        self.pos = Some(pos);
+    fn set_pos(&mut self, pos: UVec) {
+        self.pos = pos;
     }
 }

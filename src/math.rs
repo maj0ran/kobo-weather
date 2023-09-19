@@ -4,6 +4,7 @@ pub struct Vec2<T> {
     pub y: T,
 }
 
+#[allow(unused)]
 impl<T> Vec2<T> {
     pub fn new(x: T, y: T) -> Vec2<T> {
         Vec2 { x, y }
@@ -21,6 +22,7 @@ impl<T> Vec2<T> {
     }
 }
 
+#[allow(unused)]
 impl Vec2<f32> {
     pub fn len(&self) -> f32 {
         f32::sqrt(self.x * self.x + self.y * self.y)
@@ -66,6 +68,24 @@ impl From<Vec2<f32>> for Vec2<i16> {
         Vec2::<i16> {
             x: value.x as i16,
             y: value.y as i16,
+        }
+    }
+}
+
+impl From<UVec> for IVec {
+    fn from(value: UVec) -> Self {
+        IVec {
+            x: value.x as i16,
+            y: value.y as i16,
+        }
+    }
+}
+
+impl From<IVec> for UVec {
+    fn from(value: IVec) -> Self {
+        UVec {
+            x: value.x as u16,
+            y: value.y as u16,
         }
     }
 }
@@ -145,6 +165,7 @@ pub struct Mat2<T> {
     m: [[T; 2]; 2],
 }
 
+#[allow(unused)]
 impl<T> Mat2<T> {
     pub fn new(vals: (T, T, T, T)) -> Mat2<T> {
         Mat2 {
@@ -168,3 +189,6 @@ where
         Vec2 { x, y }
     }
 }
+
+pub type UVec = Vec2<u16>;
+pub type IVec = Vec2<i16>;

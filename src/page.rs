@@ -4,8 +4,8 @@ use crate::screen::Screen;
 
 pub struct Page<'a> {
     pub screen: Option<&'a Screen<'a>>,
-    pub width: i16,
-    pub height: i16,
+    pub width: u16,
+    pub height: u16,
     pub widgets: Vec<Box<dyn Widget>>,
 }
 
@@ -27,10 +27,6 @@ impl<'a> Page<'a> {
         for o in &self.widgets {
             let mut data = o.get_pixel_data().iter();
             let p = o.get_pos();
-            let p = match p {
-                Some(p) => p,
-                None => return Err("object has no position"),
-            };
 
             let w = o.get_width();
             let h = o.get_height();

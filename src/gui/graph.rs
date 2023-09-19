@@ -1,14 +1,14 @@
 use crate::{
-    math::Vec2,
+    math::{IVec, UVec},
     util::{Color, Line},
 };
 
 use super::gui::Widget;
 
 pub struct Graph {
-    pos: Option<Vec2<i16>>,
-    width: i16,
-    height: i16,
+    pos: UVec,
+    width: u16,
+    height: u16,
     min: i16,
     max: i16,
     step_count: u16,
@@ -16,10 +16,10 @@ pub struct Graph {
 }
 
 impl Graph {
-    pub fn new(width: i16, height: i16, min: i16, max: i16, step_count: u16) -> Box<Graph> {
-        let x_axis = Line::new(Vec2::new(0, 0), Vec2::new(width, 0), 8);
-        let y_axis = Line::new(Vec2::new(4, 0), Vec2::new(4, height), 8);
-        let l = Line::new(Vec2::<i16>::new(200, 200), Vec2::<i16>::new(1200, 1200), 6);
+    pub fn new(width: u16, height: u16, min: i16, max: i16, step_count: u16) -> Box<Graph> {
+        let x_axis = Line::new(IVec::new(0, 0), IVec::new(width as i16, 0), 8);
+        let y_axis = Line::new(IVec::new(4, 0), IVec::new(4, height as i16), 8);
+        let l = Line::new(IVec::new(200, 200), IVec::new(1200, 1200), 6);
         let mut pixels = vec![Color::new(255, 255, 255); width as usize * height as usize];
 
         for p in l {
@@ -27,7 +27,7 @@ impl Graph {
         }
 
         Box::new(Graph {
-            pos: None,
+            pos: UVec { x: 0, y: 0 },
             width,
             height,
             min,
@@ -39,15 +39,15 @@ impl Graph {
 }
 
 impl Widget for Graph {
-    fn get_width(&self) -> i16 {
+    fn get_width(&self) -> u16 {
         self.width
     }
 
-    fn get_height(&self) -> i16 {
+    fn get_height(&self) -> u16 {
         self.height
     }
 
-    fn get_pos(&self) -> Option<Vec2<i16>> {
+    fn get_pos(&self) -> UVec {
         self.pos
     }
 
@@ -55,7 +55,7 @@ impl Widget for Graph {
         &self.pixels
     }
 
-    fn set_pos(&mut self, pos: Vec2<i16>) {
-        self.pos = Some(pos)
+    fn set_pos(&mut self, pos: UVec) {
+        self.pos = pos
     }
 }

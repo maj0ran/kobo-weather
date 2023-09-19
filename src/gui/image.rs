@@ -1,22 +1,22 @@
-use crate::{math::Vec2, util::Color};
+use crate::{math::UVec, util::Color};
 use image::{imageops::FilterType, io::Reader as ImageReader};
 use std::path::Path;
 
-use super::gui::Widget;
+use super::gui::{Position, Widget};
 
 /***
  * GUI-Element that shows an Image on the E-Ink Display
  ***/
 #[derive(Debug)]
 pub struct Image {
-    pos: Option<Vec2<i16>>,
-    width: i16,
-    height: i16,
+    pos: UVec,
+    width: u16,
+    height: u16,
     pixels: Vec<Color>,
 }
 
 impl Image {
-    pub fn new(filename: &str, scale: f32) -> Box<Image> {
+    pub fn new(filename: &str, scale: f32, pos: Position) -> Box<Image> {
         let file = Path::new(filename);
         println!("{}", filename);
         let data = ImageReader::open(file).unwrap().decode().unwrap();
@@ -24,8 +24,8 @@ impl Image {
         let h: f32 = data.height() as f32;
 
         let data = data.resize((w * scale) as u32, (h * scale) as u32, FilterType::Gaussian);
-        let width = data.width() as i16;
-        let height = data.height() as i16;
+        let width = data.width() as u16;
+        let height = data.height() as u16;
 
         // turn into grayscale and convert transparent background to white
         let mut img = data.to_luma_alpha8();
@@ -40,25 +40,32 @@ impl Image {
             pixels.push(Color::new(val, val, val))
         }
 
-        Box::new(Image {
-            pos: None,
+        let w = Image {
+            pos: UVec { x: 0, y: 0 },
             width,
             height,
             pixels,
-        })
+        };
+
+        let w = match pos {
+            Position::Absolute(p) => w.set_pos_abs(p),
+            Position::Relative(p) => w.set_pos_rel(p),
+        };
+
+        Box::new(w)
     }
 }
 
 impl Widget for Image {
-    fn get_width(&self) -> i16 {
+    fn get_width(&self) -> u16 {
         self.width
     }
 
-    fn get_height(&self) -> i16 {
+    fn get_height(&self) -> u16 {
         self.height
     }
 
-    fn get_pos(&self) -> Option<Vec2<i16>> {
+    fn get_pos(&self) -> UVec {
         self.pos
     }
 
@@ -66,7 +73,7 @@ impl Widget for Image {
         &self.pixels
     }
 
-    fn set_pos(&mut self, pos: Vec2<i16>) {
-        self.pos = Some(pos);
+    fn set_pos(&mut self, pos: UVec) {
+        self.pos = pos;
     }
 }

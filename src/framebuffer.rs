@@ -1,5 +1,5 @@
 extern crate libc;
-use crate::math::Vec2;
+use crate::math::UVec;
 use libc::ioctl;
 
 use std::{
@@ -240,7 +240,7 @@ impl Framebuffer {
         }
     }
 
-    pub fn set_pixel(&mut self, p: Vec2<i16>, rgb: [u8; 3]) {
+    pub fn set_pixel(&mut self, p: UVec, rgb: [u8; 3]) {
         let addr = (self.var_info.xoffset as isize + p.x as isize)
             * (self.bytes_per_pixel as isize)
             + (self.var_info.yoffset as isize + p.y as isize)
