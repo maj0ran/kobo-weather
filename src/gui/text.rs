@@ -11,13 +11,11 @@ use rusttype::{Font, PositionedGlyph, Scale};
 use super::gui::{Position, Widget};
 
 pub struct Text<'a> {
-    // text: String
     pub pos: UVec,
     pub width: u16,
     pub height: u16,
     pub font_info: FontSetting,
     glyphs: Vec<PositionedGlyph<'a>>,
-    pixels: Vec<Color>,
 }
 
 impl<'a> Text<'a> {
@@ -67,7 +65,6 @@ impl<'a> Text<'a> {
             height: glyphs_height as u16,
             font_info,
             glyphs,
-            pixels,
         };
 
         let w = match pos {

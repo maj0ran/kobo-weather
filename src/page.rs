@@ -1,48 +1,50 @@
 use crate::gui::gui::Widget;
-use crate::math::Vec2;
 use crate::screen::Screen;
+use crate::util::Color;
 
-pub struct Page<'a> {
-    pub screen: &'a Screen<'a>,
+pub struct Page {
     pub width: u16,
     pub height: u16,
     pub widgets: Vec<Box<dyn Widget>>,
+    buffer: Vec<Color>,
 }
 
-impl<'a> Page<'a> {
-    pub fn new(screen: &'a Screen<'a>) -> Page<'a> {
+impl Page {
+    pub fn new(screen: &Screen) -> Page {
         let width = screen.width;
         let height = screen.height;
+        let buffer = vec![Color::new(255, 255, 255); width as usize * height as usize];
+
         Page {
-            screen,
             width,
             height,
             widgets: Vec::new(),
+            buffer,
         }
     }
     pub fn add(&mut self, obj: Box<dyn Widget>) {
         self.widgets.push(obj);
     }
-
-    pub fn render(&self) -> Result<(), &str> {
-        let screen = self.screen;
+    /*
+     * take all widgets and composite them into a single buffer with the size of a page
+     */
+    pub fn composite(&mut self) -> &Vec<Color> {
+        let buf = &mut self.buffer;
         for widget in &self.widgets {
-            let data = widget.get_pixel_data();
+            let pixels = widget.get_pixel_data();
+            let pos = widget.get_pos();
 
-            let p = widget.get_pos();
-            let w = widget.get_width() as usize;
-            let h = widget.get_height() as usize;
-
-            for y in 0..h {
-                for x in 0..w {
-                    let res = screen.plot(p + Vec2::new(x as u16, y as u16), data[y * w + x]);
-                    match res {
-                        Ok(_) => {}
-                        Err(_) => panic!("tried to plot pixel outside of screen!"),
-                    }
-                }
+            // scan each line of the widget
+            for line in 0..widget.get_height() as usize {
+                // using Vec.splice(), we move each pixel line of the widget
+                // to the page-buffer with respect to its absolute position on the page
+                let begin = (pos.y as usize + line) as usize * self.width as usize + pos.x as usize;
+                let end = begin + widget.get_width() as usize;
+                let it = &pixels
+                    [line * widget.get_width() as usize..(line + 1) * widget.get_width() as usize];
+                buf.splice(begin..end, it.iter().cloned());
             }
         }
-        Ok(())
+        buf
     }
 }

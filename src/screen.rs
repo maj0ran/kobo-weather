@@ -7,15 +7,15 @@ use crate::page::Page;
 use crate::util::Color;
 
 /* Abstraction over the framebuffer for our eink usecase */
-pub struct Screen<'a> {
+pub struct Screen {
     pub(crate) fb: Rc<RefCell<Framebuffer>>,
     pub width: u16,
     pub height: u16,
-    pages: Rc<RefCell<Vec<Page<'a>>>>,
+    pages: Rc<RefCell<Vec<Page>>>,
 }
 
-impl<'a> Screen<'a> {
-    pub fn new() -> Option<Screen<'a>> {
+impl Screen {
+    pub fn new() -> Option<Screen> {
         let fb = Framebuffer::new("/dev/fb0");
         let fb = match fb {
             Ok(fb) => fb,
@@ -26,7 +26,7 @@ impl<'a> Screen<'a> {
         let height = fb.var_info.yres as u16;
         let fb = Rc::new(RefCell::new(fb));
 
-        Some(Screen::<'a> {
+        Some(Screen {
             fb,
             width,
             height,
@@ -34,15 +34,22 @@ impl<'a> Screen<'a> {
         })
     }
 
-    pub fn add_page(&'a self, page: Page<'a>) {
+    pub fn add_page(&self, page: Page) {
         let mut vector = self.pages.borrow_mut();
         vector.push(page);
     }
 
     pub fn render(&self) {
-        let pages = self.pages.borrow();
-        for p in pages.iter() {
-            let _ = p.render();
+        let mut pages = self.pages.borrow_mut();
+        for p in pages.iter_mut() {
+            let page = p.composite();
+            for (i, pix) in page.iter().enumerate() {
+                let v = UVec::new(
+                    (i as usize % self.width as usize) as u16,
+                    (i as usize / self.width as usize) as u16,
+                );
+                let _ = self.plot(v, *pix);
+            }
         }
     }
 
