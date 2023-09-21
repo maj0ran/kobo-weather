@@ -1,24 +1,24 @@
 mod framebuffer;
-mod gui;
 mod math;
 mod openweather;
 mod page;
 mod screen;
 mod util;
 mod weather_data;
+mod widgets;
 
-use gui::gui::{HAlign, VAlign};
+use widgets::widget::{HAlign, VAlign};
 
-use gui::image::Image;
-use gui::text::Text;
 use openweather::get_weather;
 use page::Page;
 use screen::Screen;
 use util::FontSetting;
 use weather_data::WeatherData;
+use widgets::image::Image;
+use widgets::text::Text;
 
-use crate::gui::gui::{Position, Positioner};
 use crate::math::{UVec, Vec2};
+use crate::widgets::widget::{Position, Positioner};
 
 #[allow(unused)]
 const FONT_BIG: FontSetting = FontSetting {
@@ -68,7 +68,7 @@ fn main() -> std::io::Result<()> {
     let openweather = get_weather().unwrap();
     let weather = WeatherData::new(openweather);
 
-    /*** create GUI objects ***/
+    /*** create widgets objects ***/
 
     /*** date, time, location ***/
     let locale = Text::new(
@@ -311,7 +311,7 @@ fn main() -> std::io::Result<()> {
     //   let mut g = Graph::new(screen.width, screen.height, 0, 30, 5);
     //   g.set_pos(Vec2::new(0, 0));
 
-    /*** add GUI objects to pages ***/
+    /*** add widgets objects to pages ***/
     mainpage.add(locale);
     mainpage.add(temp);
     mainpage.add(temp_min);

@@ -8,7 +8,7 @@ use crate::{
 };
 use rusttype::{Font, PositionedGlyph, Scale};
 
-use super::gui::{Position, Widget};
+use super::widget::{Position, Widget};
 
 pub struct Text<'a> {
     pub pos: UVec,
@@ -77,7 +77,9 @@ impl<'a> Text<'a> {
 }
 
 impl<'a> Widget for Text<'a> {
-    fn get_pixel_data(&self) -> Vec<Color> {
+    widget!();
+
+    fn make(&self) -> Vec<Color> {
         let mut pixels =
             vec![Color::new(255, 255, 255); self.width as usize * self.height as usize];
 
@@ -92,20 +94,5 @@ impl<'a> Widget for Text<'a> {
             }
         }
         pixels
-    }
-    fn get_width(&self) -> u16 {
-        self.width
-    }
-
-    fn get_height(&self) -> u16 {
-        self.height
-    }
-
-    fn get_pos(&self) -> UVec {
-        self.pos
-    }
-
-    fn set_pos(&mut self, pos: UVec) {
-        self.pos = pos;
     }
 }

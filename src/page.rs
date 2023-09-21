@@ -1,6 +1,6 @@
-use crate::gui::gui::Widget;
 use crate::screen::Screen;
 use crate::util::Color;
+use crate::widgets::widget::Widget;
 
 pub struct Page {
     pub width: u16,
@@ -31,7 +31,7 @@ impl Page {
     pub fn composite(&mut self) -> &Vec<Color> {
         let buf = &mut self.buffer;
         for widget in &self.widgets {
-            let pixels = widget.get_pixel_data();
+            let pixels = widget.make();
             let pos = widget.get_pos();
 
             // scan each line of the widget

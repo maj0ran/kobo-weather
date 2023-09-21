@@ -47,6 +47,9 @@ pub enum Position<'a> {
  * Trait for GUI-Elements that can be drawn on the E-Ink Display
  ***/
 pub trait Widget {
+    /* Position the Widget by an absolute value.
+     * This is just a 2D Point on the screen space
+     */
     fn set_pos_abs(mut self, pos: UVec) -> Self
     where
         Self: Sized,
@@ -54,6 +57,16 @@ pub trait Widget {
         self.set_pos(pos);
         self
     }
+    /* Position the Widget by a value relative to another Widget.
+     * This positioning is composited by three values: an anchor of another Widget,
+     * an alignment of itself and a margin.
+     *
+     * - The anchor is one of eight positions of another widget: one of the 4 corner or one of the 4
+     * centers between the corner.
+     * - The alignment then decides how this widget is aligned relative to the anchor. A left
+     * alignment means the widget is moved so that it is left to the anchor.
+     * - Finally, the margin adds a vector on this position.
+     */
     fn set_pos_rel(mut self, pos: &Positioner) -> Self
     where
         Self: Sized,
@@ -81,6 +94,7 @@ pub trait Widget {
             VAlign::Center => UVec::new(0, self.get_height() / 2),
             VAlign::Down => UVec::new(0, 0),
         },
+            // Add the margin to the Position
         ) + IVec::new(pos.margin.0, pos.margin.1);
 
         self.set_pos(UVec::from(position));
@@ -90,6 +104,27 @@ pub trait Widget {
     fn get_width(&self) -> u16;
     fn get_height(&self) -> u16;
     fn get_pos(&self) -> UVec;
-    fn get_pixel_data(&self) -> Vec<Color>;
     fn set_pos(&mut self, pos: UVec);
+    /* generate the pixel data to draw the widget */
+    fn make(&self) -> Vec<Color>;
+}
+
+macro_rules! widget {
+    () => {
+        fn get_width(&self) -> u16 {
+            self.width
+        }
+
+        fn get_height(&self) -> u16 {
+            self.height
+        }
+
+        fn get_pos(&self) -> UVec {
+            self.pos
+        }
+
+        fn set_pos(&mut self, pos: UVec) {
+            self.pos = pos;
+        }
+    };
 }

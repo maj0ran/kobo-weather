@@ -2,7 +2,7 @@ use crate::{math::UVec, util::Color};
 use image::{imageops::FilterType, io::Reader as ImageReader, DynamicImage};
 use std::path::Path;
 
-use super::gui::{Position, Widget};
+use super::widget::{Position, Widget};
 
 /***
  * GUI-Element that shows an Image on the E-Ink Display
@@ -51,19 +51,9 @@ impl Image {
 }
 
 impl Widget for Image {
-    fn get_width(&self) -> u16 {
-        self.width
-    }
+    widget!();
 
-    fn get_height(&self) -> u16 {
-        self.height
-    }
-
-    fn get_pos(&self) -> UVec {
-        self.pos
-    }
-
-    fn get_pixel_data(&self) -> Vec<Color> {
+    fn make(&self) -> Vec<Color> {
         let mut pixels: Vec<Color> = Vec::with_capacity((self.width * self.height) as usize);
         let mut img = self.data.to_luma_alpha8();
         for px in img.pixels_mut() {
@@ -71,9 +61,5 @@ impl Widget for Image {
             pixels.push(Color::new(val, val, val))
         }
         pixels
-    }
-
-    fn set_pos(&mut self, pos: UVec) {
-        self.pos = pos;
     }
 }

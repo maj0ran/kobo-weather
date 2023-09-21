@@ -3,7 +3,7 @@ use crate::{
     util::{Color, Line},
 };
 
-use super::gui::Widget;
+use super::widget::Widget;
 
 pub struct Graph {
     pos: UVec,
@@ -39,24 +39,10 @@ impl Graph {
 }
 
 impl Widget for Graph {
-    fn get_width(&self) -> u16 {
-        self.width
-    }
+    widget!();
 
-    fn get_height(&self) -> u16 {
-        self.height
-    }
-
-    fn get_pos(&self) -> UVec {
-        self.pos
-    }
-
-    fn get_pixel_data(&self) -> Vec<Color> {
+    fn make(&self) -> Vec<Color> {
         let pixels = Vec::<Color>::new();
         pixels
-    }
-
-    fn set_pos(&mut self, pos: UVec) {
-        self.pos = pos
     }
 }
