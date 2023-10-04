@@ -1,4 +1,4 @@
-use crate::math::{Mat2, Vec2};
+use crate::math::{Mat2, UVec, Vec2};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Color {
@@ -19,22 +19,15 @@ pub struct FontSetting {
     pub saturation: f32,
 }
 
-pub struct Line {
-    p1: Vec2<i16>,
-    p2: Vec2<i16>,
-    thickness: u16,
-}
+pub struct Line;
 
 impl Line {
-    pub fn n(p1: Vec2<i16>, p2: Vec2<i16>, thickness: u16) -> Line {
-        Line { p1, p2, thickness }
-    }
-    pub fn new(p1: Vec2<i16>, p2: Vec2<i16>, thickness: i16) -> Vec<Vec2<i16>> {
+    pub fn new(p1: UVec, p2: UVec, thickness: i16) -> Vec<UVec> {
         // bounding box
-        let x_min = p1.x.min(p2.x) - thickness / 2;
-        let x_max = p1.x.max(p2.x) + thickness / 2;
-        let y_min = p1.y.min(p2.y) - thickness / 2;
-        let y_max = p1.y.max(p2.y) + thickness / 2;
+        let x_min = p1.x.min(p2.x) - (thickness / 2) as u16;
+        let x_max = p1.x.max(p2.x) + (thickness / 2) as u16;
+        let y_min = p1.y.min(p2.y) - (thickness / 2) as u16;
+        let y_max = p1.y.max(p2.y) + (thickness / 2) as u16;
 
         let mut pixels = Vec::new();
 
@@ -43,7 +36,7 @@ impl Line {
         let d = ba.norm();
         for y in y_min..=y_max {
             for x in x_min..=x_max {
-                let p = Vec2::new(x, y);
+                let p = UVec::new(x, y);
                 let q = Vec2::<f32>::from(p) - (Vec2::<f32>::from(p1 + p2) * 0.5);
                 let q = Mat2::<f32>::new((d.x, -d.y, d.y, d.x)) * q;
                 let q = q.abs() - (Vec2::new(l, thickness as f32) * 0.5);
@@ -57,8 +50,16 @@ impl Line {
     }
 }
 
-pub struct Rectangle {
-    width: u16,
-    height: u16,
-    saturation: f32,
+pub struct Rectangle;
+
+impl Rectangle {
+    pub fn new(pos: Vec2<u16>, width: u16, height: u16) -> Vec<UVec> {
+        let mut pixels = Vec::new();
+        for y in pos.y..pos.y + height {
+            for x in pos.x..pos.x + width {
+                pixels.push(UVec::new(x, y));
+            }
+        }
+        pixels
+    }
 }

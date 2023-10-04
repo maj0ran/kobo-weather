@@ -57,6 +57,7 @@ pub trait Widget {
         self.set_pos(pos);
         self
     }
+
     /* Position the Widget by a value relative to another Widget.
      * This positioning is composited by three values: an anchor of another Widget,
      * an alignment of itself and a margin.

@@ -11,8 +11,8 @@ pub struct Sys {
 }
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Rain {
-    pub one_hour: f32,
-    pub three_hour: f32,
+    pub one_hour: Option<f32>,
+    pub three_hour: Option<f32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

@@ -112,14 +112,22 @@ impl WeatherData {
             cloudiness: data.clouds.all.into(),
             rain_1h: {
                 if let Some(r) = &data.rain {
-                    r.one_hour.into()
+                    if let Some(r) = r.one_hour {
+                        r.into()
+                    } else {
+                        0.0.into()
+                    }
                 } else {
                     0.0.into()
                 }
             },
             rain_3h: {
                 if let Some(r) = &data.rain {
-                    r.one_hour.into()
+                    if let Some(r) = r.three_hour {
+                        r.into()
+                    } else {
+                        0.0.into()
+                    }
                 } else {
                     0.0.into()
                 }

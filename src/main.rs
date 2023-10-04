@@ -18,6 +18,7 @@ use widgets::image::Image;
 use widgets::text::Text;
 
 use crate::math::{UVec, Vec2};
+use crate::widgets::graph::Graph;
 use crate::widgets::widget::{Position, Positioner};
 
 #[allow(unused)]
@@ -308,8 +309,19 @@ fn main() -> std::io::Result<()> {
         }),
     );
 
-    //   let mut g = Graph::new(screen.width, screen.height, 0, 30, 5);
-    //   g.set_pos(Vec2::new(0, 0));
+    let g = Graph::new(
+        screen.width - 128,
+        screen.height / 3,
+        0,
+        30,
+        5,
+        Position::Relative(&Positioner {
+            rel: s_icon.as_ref(),
+            anchor: (HAlign::Left, VAlign::Up),
+            align: (HAlign::Right, VAlign::Up),
+            margin: (64, -64),
+        }),
+    );
 
     /*** add widgets objects to pages ***/
     mainpage.add(locale);
@@ -337,7 +349,7 @@ fn main() -> std::io::Result<()> {
     mainpage.add(pressure_grnd);
     mainpage.add(pressure_sea);
 
-    //  mainpage.add(g);
+    mainpage.add(g);
     /*** add pages to screen ***/
     screen.add_page(mainpage);
     /*** draw ***/

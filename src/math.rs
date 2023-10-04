@@ -71,6 +71,14 @@ impl From<Vec2<f32>> for Vec2<i16> {
         }
     }
 }
+impl From<UVec> for Vec2<f32> {
+    fn from(value: UVec) -> Self {
+        Vec2::<f32> {
+            x: value.x as f32,
+            y: value.y as f32,
+        }
+    }
+}
 
 impl From<UVec> for IVec {
     fn from(value: UVec) -> Self {
